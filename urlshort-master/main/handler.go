@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"net/http"
 )
 
@@ -14,22 +13,16 @@ import (
 func MapHandler(pathsToUrls map[string]string, fallback http.Handler) http.HandlerFunc {
 	//	TODO: Implement this...
 
-	// so the map handler is going to either be one that actually does something, or one that returns hello world.
+	// TODO: need to handle case when URL is not in the list of URLs
 	return func(w http.ResponseWriter, r *http.Request) {
-		// so this function is going to execute and needs to send back a function capable of executing and doing what is needed.
 		returnedURL := ""
 		for registeredURL := range pathsToUrls {
 			incomingURL := r.URL.String()
-			fmt.Println(incomingURL)
-			fmt.Println(registeredURL)
 			if incomingURL == registeredURL {
 				returnedURL = pathsToUrls[registeredURL]
-				fmt.Println(returnedURL)
 			}
 		}
 		if !(returnedURL == "") {
-			// w.WriteHeader(302)
-			// w.Header().Set("Location", returnedURL)
 			http.Redirect(w, r, returnedURL, 302)
 		}
 	}
