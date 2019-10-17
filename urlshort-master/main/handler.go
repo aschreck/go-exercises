@@ -1,8 +1,16 @@
 package main
 
 import (
+	"fmt"
 	"net/http"
+
+	"gopkg.in/yaml.v2"
 )
+
+type parsedYAML []struct {
+	Path string `yaml:"path"`
+	URL  string `yaml:"url"`
+}
 
 // MapHandler will return an http.HandlerFunc (which also
 // implements http.Handler) that will attempt to map any
@@ -24,6 +32,8 @@ func MapHandler(pathsToUrls map[string]string, fallback http.Handler) http.Handl
 		}
 		if !(returnedURL == "") {
 			http.Redirect(w, r, returnedURL, 302)
+		} else {
+			fallback.ServeHTTP(w, r)
 		}
 	}
 }
@@ -46,5 +56,11 @@ func MapHandler(pathsToUrls map[string]string, fallback http.Handler) http.Handl
 // a mapping of paths to urls.
 func YAMLHandler(yml []byte, fallback http.Handler) (http.HandlerFunc, error) {
 	// TODO: Implement this...
+	ymlStruct := parsedYAML{}
+	parsedYaml := yaml.Unmarshal(yml, &ymlStruct)
+	fmt.Println(parsedYaml)
+	// this takes in YAML as a byte slice. need to parse the yaml
+
+	// unmarshall the bytle slice into a struct which contains the fields.
 	return nil, nil
 }
