@@ -7,9 +7,7 @@ import (
 	"gopkg.in/yaml.v2"
 )
 
-type parsedYAML []struct {
-	Path string `yaml:"path"`
-	URL  string `yaml:"url"`
+type pathToURL struct {
 }
 
 // MapHandler will return an http.HandlerFunc (which also
@@ -56,11 +54,34 @@ func MapHandler(pathsToUrls map[string]string, fallback http.Handler) http.Handl
 // a mapping of paths to urls.
 func YAMLHandler(yml []byte, fallback http.Handler) (http.HandlerFunc, error) {
 	// TODO: Implement this...
-	ymlStruct := parsedYAML{}
-	parsedYaml := yaml.Unmarshal(yml, &ymlStruct)
-	fmt.Println(parsedYaml)
-	// this takes in YAML as a byte slice. need to parse the yaml
+	pathUrls, err := parseYaml(yml)
+	if err != nil {
+		return nil, err
+	}
+	pathsToUrls := buildMap(pathUrls)
 
-	// unmarshall the bytle slice into a struct which contains the fields.
-	return nil, nil
+	return MapHandler(pathsToUrls, fallback), nil
+}
+
+func buildMap(pathUrls []pathUrl) map[string]string {
+	pathsToUrls := make(map[string]string)
+	for _, pathUrl := range pathUrls {
+		pathsToUrls[pathUrl.Path] = pathUrl.URL
+	}
+	return pathsToUrls
+}
+
+func parseYaml(data []byte) ([]pathUrl, error) {
+	var pathUrls []pathUrl
+	err := yaml.Unmarshal(data, &pathUrls)
+	if err != nil {
+		return nil, err
+	}
+	fmt.Println(pathUrls)
+	return pathUrls, nil
+}
+
+type pathUrl struct {
+	Path string `yaml:"path"`
+	URL  string `yaml:"url"`
 }

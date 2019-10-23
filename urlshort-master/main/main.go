@@ -29,7 +29,7 @@ func main() {
 		panic(err)
 	}
 	fmt.Println("Starting the server on :8080")
-	// http.ListenAndServe(":8080", yamlHandler)
+	// http.ListenAndServe(":8080", mapHandler)
 	http.ListenAndServe(":8080", yamlHandler)
 }
 
@@ -42,3 +42,5 @@ func defaultMux() *http.ServeMux {
 func hello(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintln(w, "Hello, world!")
 }
+
+// the part of this that was confusing to me was parsing the YAML into an array of structs.
